@@ -29,7 +29,6 @@ class ViewController: UIViewController {
     @IBOutlet weak var navButton: UIBarButtonItem!
     
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -50,65 +49,80 @@ class ViewController: UIViewController {
     
     private func startAnimation() {
         animating = true
-        UIView.animate(withDuration: 2) {
+        
+        UIView.animate(withDuration: 2, animations: {
             self.lambdaImageView.alpha = 0
-        }
-        DispatchQueue.main.async {
-            self.animateLabel(with: self.lLabel)
-        }
-        DispatchQueue.main.async {
-            self.animateLabel(with: self.a1Label)
-        }
-        DispatchQueue.main.async {
-            self.animateLabel(with: self.mLabel)
-        }
-        DispatchQueue.main.async {
-            self.animateLabel(with: self.bLabel)
-        }
-        DispatchQueue.main.async {
-            self.animateLabel(with: self.dLabel)
-        }
-        DispatchQueue.main.async {
-            self.animateLabel(with: self.a2Label)
+        }) { (_) in
+            self.lLabel.textColor = self.randomColor()
+            self.lLabel.backgroundColor = self.randomColor()
+            let point1 = self.randomPoint(for: self.lLabel)
+            self.lLabel.transform = CGAffineTransform(rotationAngle: self.randomRotation()).concatenating(CGAffineTransform(translationX: point1.x, y: point1.y))
+            
+            self.a1Label.textColor = self.randomColor()
+            self.a1Label.backgroundColor = self.randomColor()
+            let point2 = self.randomPoint(for: self.lLabel)
+            self.a1Label.transform = CGAffineTransform(rotationAngle: self.randomRotation()).concatenating(CGAffineTransform(translationX: point2.x, y: point2.y))
+            
+            self.mLabel.textColor = self.randomColor()
+            self.mLabel.backgroundColor = self.randomColor()
+            let point3 = self.randomPoint(for: self.lLabel)
+            self.mLabel.transform = CGAffineTransform(rotationAngle: self.randomRotation()).concatenating(CGAffineTransform(translationX: point3.x, y: point3.y))
+            
+            self.bLabel.textColor = self.randomColor()
+            self.bLabel.backgroundColor = self.randomColor()
+            let point4 = self.randomPoint(for: self.lLabel)
+            self.a1Label.transform = CGAffineTransform(rotationAngle: self.randomRotation()).concatenating(CGAffineTransform(translationX: point4.x, y: point4.y))
+            
+            self.dLabel.textColor = self.randomColor()
+            self.dLabel.backgroundColor = self.randomColor()
+            let point5 = self.randomPoint(for: self.lLabel)
+            self.dLabel.transform = CGAffineTransform(rotationAngle: self.randomRotation()).concatenating(CGAffineTransform(translationX: point5.x, y: point5.y))
+            
+            self.a2Label.textColor = self.randomColor()
+            self.a2Label.backgroundColor = self.randomColor()
+            let point6 = self.randomPoint(for: self.lLabel)
+            self.a2Label.transform = CGAffineTransform(rotationAngle: self.randomRotation()).concatenating(CGAffineTransform(translationX: point6.x, y: point6.y))
+            
         }
     }
     
     private func stopAnimations () {
         animating = false
-        DispatchQueue.main.async {
-            while self.numAnimating != 0 {
-                pause()
-            }
-            UIView.animate(withDuration: 2) {
-                self.lambdaImageView.alpha = 1
-            }
-        }
+        
+        UIView.animate(withDuration: self.randomDuration(), delay: self.randomDuration(), animations: {
+            self.lLabel.transform = .identity
+            self.a1Label.transform = .identity
+            self.mLabel.transform = .identity
+            self.bLabel.transform = .identity
+            self.dLabel.transform = .identity
+            self.a2Label.transform = .identity
+        }, completion: { (_) in
+            self.lLabel.backgroundColor = .white
+            self.lLabel.textColor = .black
+            self.a1Label.backgroundColor = .white
+            self.a1Label.textColor = .black
+            self.mLabel.backgroundColor = .white
+            self.mLabel.textColor = .black
+            self.bLabel.backgroundColor = .white
+            self.bLabel.textColor = .black
+            self.dLabel.backgroundColor = .white
+            self.dLabel.textColor = .black
+            self.a2Label.backgroundColor = .white
+            self.a2Label.textColor = .black
+            self.lambdaImageView.alpha = 1
+        })
+    }
+    
+    private func randomRotation () -> CGFloat {
+        return CGFloat.pi/CGFloat.random(in: 1...4)
     }
 
-    private func randomMoveCenterToPoint(for view: UIView) -> CGPoint {
+    private func randomPoint(for view: UILabel) -> CGPoint {
         let viewWidth = view.bounds.width
         let viewHeight = view.bounds.height
-        //Pick a direction
-        switch Int.random(in: 1...4) {
-        case 1: //Top
-            let x = CGFloat.random(in: viewWidth/2...screenWidth-(viewWidth/2))
-            let y = viewHeight/2
-            return CGPoint(x: x, y: y)
-        case 2: //Right
-            let x = screenWidth-(viewWidth/2)
-            let y = CGFloat.random(in: viewHeight/2...screenHeight-(viewHeight/2))
-            return CGPoint(x: x, y: y)
-        case 3: //Bottom
-            let x = CGFloat.random(in: viewWidth/2...screenWidth-(viewWidth/2))
-            let y = screenHeight - (viewHeight/2)
-            return CGPoint(x: x, y: y)
-        case 4: //Left
-            let x = viewWidth/2
-            let y = CGFloat.random(in: viewHeight/2...screenHeight-(viewHeight/2))
-            return CGPoint(x: x, y: y)
-        default:
-            return CGPoint()
-        }
+        let x = CGFloat.random(in: viewWidth...screenWidth-(viewWidth))
+        let y = CGFloat.random(in: viewHeight...screenHeight-(viewHeight))
+        return CGPoint(x: x, y: y)
     }
     
     private func randomColor() -> UIColor {
@@ -120,34 +134,8 @@ class ViewController: UIViewController {
     }
     
     private func randomDuration() -> TimeInterval {
-        return Double.random(in: 3...6)
+        return Double.random(in: 2...4)
     }
-    
-    private func animateLabel (with label: UILabel) {
-        var firstTime = true
-        var oldPosition: CGPoint?
-        if firstTime {
-            oldPosition = label.center
-            self.numAnimating += 1
-        }
-        if animating {
-            firstTime = false
-            label.textColor = self.randomColor()
-            label.backgroundColor = self.randomColor()
-            UIView.animate(withDuration: randomDuration()) {
-                label.center = self.randomMoveCenterToPoint(for: label)
-            }
-            animateLabel(with: label)
-        } else {
-            label.textColor = UIColor.black
-            label.backgroundColor = UIColor.white
-            UIView.animate(withDuration: randomDuration()) {
-                label.center = oldPosition!
-            }
-            self.numAnimating -= 1
-        }
-    }
-
 }
 
 
